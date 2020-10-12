@@ -90,7 +90,52 @@ We can see in the FTP server there is a file named "init.py.bak", download it wi
     
 This is probably an old backup file, when we open the file it probably looks like the Werkzeug server for port 1337, we will be interested in this for later.
 
+    from functools import wraps
+    from flask import *
+    from flask_htpasswd import HtPasswdAuth
+    import hashlib
+    import socket
+    import base64
+    import pickle
+    import hmac
 
+    app = Flask(__name__, template_folder="templates", static_folder="/opt/project/static/")
 
+    @app.route('/', methods=["GET", "POST"])
+    def index_page():
+      '''
+        __index_page__()
+      '''
+      if request.method == "POST" and request.form["story"] and request.form["submit"]:
+        md5_encode = hashlib.md5(request.form["story"]).hexdigest()
+        paths_page  = "/opt/project/uploads/%s.log" %(md5_encode)
+        write_page = open(paths_page, "w")
+        write_page.write(request.form["story"])
 
+        return "The message was sent successfully!"
 
+      return render_template("index.html")
+
+    @app.route('/checklist', methods=["GET", "POST"])
+    def check_page():
+      '''
+        __check_page__()
+      '''
+      if request.method == "POST" and request.form["check"]:
+        path_page    = "/opt/project/uploads/%s.log" %(request.form["check"])
+        open_page    = open(path_page, "rb").read()
+        open_command = pickle.loads(open_page)
+        return str(open_command)
+      else:
+        return "Server Error!"
+
+      return render_template("checklist.html")
+
+    if __name__ == '__main__':
+      app.run(host='0.0.0.0', port=1337, debug=True)
+
+# Werkzeug HTTPd
+
+When I open my browser to view the site, it asks for a username and password. I tried the default credentials but it didn't work.
+
+[gdf](https://raw.githubusercontent.com/0xEX75/misc/master/Screenshot_2020-10-12_12-42-07.png)
