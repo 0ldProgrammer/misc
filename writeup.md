@@ -63,7 +63,34 @@ The scan shows us that there are 2 open port port 21 (FTP), and 1337 (Werkzeug H
 
 The SNMP port was found which works in public, we will analyze this later and the same for the FTP.
 
-# 21
+# FTP
+
+We can see in the FTP server there is a file named "init.py.bak", download it with the ftp command.
+
+    # ftp 192.168.0.44
+    Connected to 192.168.0.44.
+    220 (vsFTPd 3.0.3)
+    Name (192.168.0.44:root): anonymous
+    331 Please specify the password.
+    Password:
+    230 Login successful.
+    Remote system type is UNIX.
+    Using binary mode to transfer files.
+    ftp> ls
+    200 PORT command successful. Consider using PASV.
+    150 Here comes the directory listing.
+    -rwxr-xr-x    1 0        0            1197 Oct 11 14:35 init.py.bak
+    226 Directory send OK.
+    ftp> mget init.py.bak
+    mget init.py.bak? y
+    200 PORT command successful. Consider using PASV.
+    150 Opening BINARY mode data connection for init.py.bak (1197 bytes).
+    226 Transfer complete.
+    1197 bytes received in 0.02 secs (70.4226 kB/s)
+    
+This is probably an old backup file, when we open the file it probably looks like the Werkzeug server for port 1337, we will be interested in this for later.
+
+
 
 
 
