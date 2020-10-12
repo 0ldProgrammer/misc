@@ -92,7 +92,6 @@ This is probably an old backup file, when we open the file it probably looks lik
 
     from functools import wraps
     from flask import *
-    from flask_htpasswd import HtPasswdAuth
     import hashlib
     import socket
     import base64
@@ -103,9 +102,6 @@ This is probably an old backup file, when we open the file it probably looks lik
 
     @app.route('/', methods=["GET", "POST"])
     def index_page():
-      '''
-        __index_page__()
-      '''
       if request.method == "POST" and request.form["story"] and request.form["submit"]:
         md5_encode = hashlib.md5(request.form["story"]).hexdigest()
         paths_page  = "/opt/project/uploads/%s.log" %(md5_encode)
@@ -116,16 +112,21 @@ This is probably an old backup file, when we open the file it probably looks lik
 
       return render_template("index.html")
 
+    @app.route('/reset', methods=["GET", "POST"])
+    def reset_page():
+      pass
+
+
     @app.route('/checklist', methods=["GET", "POST"])
     def check_page():
-      '''
-        __check_page__()
-      '''
       if request.method == "POST" and request.form["check"]:
         path_page    = "/opt/project/uploads/%s.log" %(request.form["check"])
         open_page    = open(path_page, "rb").read()
-        open_command = pickle.loads(open_page)
-        return str(open_command)
+        if "p1" in open_page:
+          open_page = pickle.loads(open_page)
+          return str(open_page)
+        else:
+          return open_page
       else:
         return "Server Error!"
 
