@@ -139,3 +139,26 @@ This is probably an old backup file, when we open the file it probably looks lik
 When I open my browser to view the site, it asks for a username and password. I tried the default credentials but it didn't work.
 
 ![gdf](https://raw.githubusercontent.com/0xEX75/misc/master/Screenshot_2020-10-12_12-42-07.png)
+
+# SNMP
+
+SNMP can be publicly accessible, so let's use the snmpwalk command to find out more about this service. If you don't know what SNMP is, don't hesitate to check Google. To put it simply, it is simply a protocol that manages network equipment to monitor and diagnose network and hardware problems remotely.
+
+    # snmpwalk -c public -v 1 192.168.0.44|head -n 15
+    Bad operator (INTEGER): At line 73 in /usr/share/snmp/mibs/ietf/SNMPv2-PDU
+    SNMPv2-MIB::sysDescr.0 = STRING: Linux pickle 4.19.0-11-amd64 #1 SMP Debian 4.19.146-1 (2020-09-17) x86_64
+    SNMPv2-MIB::sysObjectID.0 = OID: NET-SNMP-TC::linux
+    DISMAN-EVENT-MIB::sysUpTimeInstance = Timeticks: (96182) 0:16:01.82
+    SNMPv2-MIB::sysContact.0 = STRING: lucas:SuperSecretPassword123! # <<<<<<<<<<
+    SNMPv2-MIB::sysName.0 = STRING: pickle
+    SNMPv2-MIB::sysLocation.0 = STRING: Sitting on the Dock of the Bay
+    SNMPv2-MIB::sysServices.0 = INTEGER: 72
+    SNMPv2-MIB::sysORLastChange.0 = Timeticks: (45) 0:00:00.45
+    SNMPv2-MIB::sysORID.1 = OID: SNMP-MPD-MIB::snmpMPDCompliance
+    SNMPv2-MIB::sysORID.2 = OID: SNMP-USER-BASED-SM-MIB::usmMIBCompliance
+    SNMPv2-MIB::sysORID.3 = OID: SNMP-FRAMEWORK-MIB::snmpFrameworkMIBCompliance
+    SNMPv2-MIB::sysORID.4 = OID: SNMPv2-MIB::snmpMIB
+    SNMPv2-MIB::sysORID.5 = OID: SNMP-VIEW-BASED-ACM-MIB::vacmBasicGroup
+    SNMPv2-MIB::sysORID.6 = OID: TCP-MIB::tcpMIB
+    SNMPv2-MIB::sysORID.7 = OID: IP-MIB::ip
+    
