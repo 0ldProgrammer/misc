@@ -232,4 +232,17 @@ Here it tests if there is p1 value in the file if there is not p1 value in the f
  
  We have seen that the `check_page()` function loads a file, and if we do some data deserialization we can execute a command. If you don't understand, read an article [here](https://blog.nelhage.com/2011/03/exploiting-pickle/).
  
-To automate the task, we will create a Python script.
+We will first do a little serialization and file reading test to better understand the context. If for example I want to read the message I sent. I need to encrypt the message in MD5 first, let's use Python for that.
+
+    >>> import hashlib
+    >>> message = "hello"
+    >>> print(hashlib.md5(message).hexdigest())
+    5d41402abc4b2a76b9719d911017c592
+    
+If now in the text field I write "hello" and now try to use the `/checklist` function, I can perfectly read my message which saved in the remote server.
+
+    curl -u 'lucas:SuperSecretPassword123!' 'http://192.168.0.44:1337/checklist' -d "check=5d41402abc4b2a76b9719d911017c592"
+    hello
+    
+Now we need to test with serialization to run commands. We need to create a Python script for this, get your keyboards ready.
+
