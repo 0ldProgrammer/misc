@@ -228,4 +228,8 @@ Here it tests if there is p1 value in the file if there is not p1 value in the f
     else
       return open_page
       
+ # Exploitation
  
+ We have seen that the `check_page()` function loads a file, and if we do some data deserialization we can execute a command. If you don't understand, read an article [here](https://blog.nelhage.com/2011/03/exploiting-pickle/).
+ 
+To automate the task, we will create a Python script.
