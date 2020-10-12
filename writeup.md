@@ -169,3 +169,30 @@ We have found the crendential, we can connect to the Werkzeug service. The pytho
 There are only 3 sections, `HOME`, `CHECK` and `RESET`. The `CHECK` and `RESET` sections only return "Server Error!"
 
 ![b](https://raw.githubusercontent.com/0xEX75/misc/master/Screenshot_2020-10-12_12-51-22.png)
+
+The paths are also in the Python code. But there is only `/checklist` and the (`/`). It is missing `/reset` because it is probably a backup file and it is not the main file. We can see the path redirects in the Python code.
+
+    @app.route('/', methods=["GET", "POST"])
+    [...SNIP...]
+    @app.route('/checklist', methods=["GET", "POST"])
+    
+If we take a closer look at the `index_page()` function, it performs actions if we try to send a message to the Werkzeug server.
+
+    @app.route('/', methods=["GET", "POST"])
+    def index_page():
+      if request.method == "POST" and request.form["story"] and request.form["submit"]:
+        md5_encode = hashlib.md5(request.form["story"]).hexdigest()
+        paths_page  = "/opt/project/uploads/%s.log" %(md5_encode)
+        write_page = open(paths_page, "w")
+        write_page.write(request.form["story"])
+
+        return "The message was sent successfully!"
+
+First, there is a condition that tests if this is the correct method (POST) and also tests if the `[story]` and `[submit]` parameter exist. The `[story]` parameter corresponds to the message we send.
+
+    if request.method == "POST" and request.form["story"] and request.form["submit"]
+   
+So concretely it encrypts the message we send in MD5 and it puts it in a variable named md5_encode.   
+    
+    md5_encode = hashlib.md5(request.form["story"]).hexdigest()
+    
