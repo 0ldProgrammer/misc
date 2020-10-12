@@ -196,3 +196,36 @@ So concretely it encrypts the message we send in MD5 and it puts it in a variabl
     
     md5_encode = hashlib.md5(request.form["story"]).hexdigest()
     
+Here, in concrete terms, it retrieves our message, encrypts it in MD5, and will create a file with the MD5.
+
+    paths_page  = "/opt/project/uploads/%s.log" %(md5_encode)
+    
+ Here we can see that the code will create a file in the `uploads/` folder and it will write our message to the file.   
+    
+    write_page = open(paths_page, "w")
+    write_page.write(request.form["story"])
+
+We will now study the `check_page()` function. First, we can observe that the condition tests the method if it is in `POST` and also tests if the `check` parameter exists.
+
+    if request.method == "POST" and request.form["check"]
+    
+Here it seems to point to an MD5 file in the `uploads/` folder. It will probably try to open this file.    
+    
+    path_page = "/opt/project/uploads/%s.log" %(request.form["check"])
+    
+If we enter the encrypted MD5 file, we can open it with the `check` parameter.
+    
+    open_page = open(path_page, "rb").read()
+    
+pickle will pickle each of these pieces separately, and then on unpickling, will call the callable on the provided arguments to construct the new object. And so, we can construct a pickle that, when un-pickled, will execute command. (Good link [here](https://dan.lousqui.fr/explaining-and-exploiting-deserialization-vulnerability-with-python-en.html))
+
+    open_command = pickle.loads(open_page)
+    
+Here it tests if there is p1 value in the file if there is not p1 value in the file, it will open the file.
+
+    if("p1" in open_command)
+      return str(open_command)
+    else
+      return open_page
+      
+ 
