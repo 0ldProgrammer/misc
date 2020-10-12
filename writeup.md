@@ -162,3 +162,10 @@ SNMP can be publicly accessible, so let's use the snmpwalk command to find out m
     SNMPv2-MIB::sysORID.6 = OID: TCP-MIB::tcpMIB
     SNMPv2-MIB::sysORID.7 = OID: IP-MIB::ip
     
+We have found the crendential, we can connect to the Werkzeug service. The python script in the FTP server will allow us to continue our journey in this boxing.
+
+# Warkzeug HTTPd
+
+There are only 3 sections, `HOME`, `CHECK` and `RESET`. The `CHECK` and `RESET` sections only return "Server Error!"
+
+![b](https://raw.githubusercontent.com/0xEX75/misc/master/Screenshot_2020-10-12_12-51-22.png)
